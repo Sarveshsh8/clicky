@@ -2,80 +2,66 @@
 //  ElevenLabsTTSClient.swift
 //  leanring-buddy
 //
-//  Streams text-to-speech audio from ElevenLabs and plays it back
-//  through the system audio output. Uses the streaming endpoint so
-//  playback begins before the full audio has been generated.
+//  Local TTS using AVSpeechSynthesizer — no network, no API keys.
+//  Keeps the same interface as the ElevenLabs version so CompanionManager
+//  doesn't need to change.
+//
+//  speakText() starts speaking and returns immediately (mirroring the
+//  original AVAudioPlayer.play() behaviour). CompanionManager polls
+//  isPlaying to detect when playback finishes.
 //
 
 import AVFoundation
 import Foundation
 
 @MainActor
-final class ElevenLabsTTSClient {
-    private let proxyURL: URL
-    private let session: URLSession
+final class ElevenLabsTTSClient: NSObject {
+    private let synthesizer = AVSpeechSynthesizer()
+    private var _isPlaying = false
 
-    /// The audio player for the current TTS playback. Kept alive so the
-    /// audio finishes playing even if the caller doesn't hold a reference.
-    private var audioPlayer: AVAudioPlayer?
-
-    init(proxyURL: String) {
-        self.proxyURL = URL(string: proxyURL)!
-
-        let configuration = URLSessionConfiguration.default
-        configuration.timeoutIntervalForRequest = 30
-        configuration.timeoutIntervalForResource = 60
-        self.session = URLSession(configuration: configuration)
+    override init() {
+        super.init()
+        synthesizer.delegate = self
     }
 
-    /// Sends `text` to ElevenLabs TTS and plays the resulting audio.
-    /// Throws on network or decoding errors. Cancellation-safe.
+    // Keeps CompanionManager's ElevenLabsTTSClient(proxyURL:) call compiling.
+    convenience init(proxyURL: String) {
+        self.init()
+    }
+
+    /// Starts speaking `text` and returns immediately.
+    /// Caller can poll `isPlaying` to detect when playback finishes.
     func speakText(_ text: String) async throws {
-        var request = URLRequest(url: proxyURL)
-        request.httpMethod = "POST"
-        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        request.setValue("audio/mpeg", forHTTPHeaderField: "Accept")
-
-        let body: [String: Any] = [
-            "text": text,
-            "model_id": "eleven_flash_v2_5",
-            "voice_settings": [
-                "stability": 0.5,
-                "similarity_boost": 0.75
-            ]
-        ]
-
-        request.httpBody = try JSONSerialization.data(withJSONObject: body)
-
-        let (data, response) = try await session.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw NSError(domain: "ElevenLabsTTS", code: -1,
-                          userInfo: [NSLocalizedDescriptionKey: "Invalid response"])
-        }
-
-        guard (200...299).contains(httpResponse.statusCode) else {
-            let errorBody = String(data: data, encoding: .utf8) ?? "Unknown error"
-            throw NSError(domain: "ElevenLabsTTS", code: httpResponse.statusCode,
-                          userInfo: [NSLocalizedDescriptionKey: "TTS API error (\(httpResponse.statusCode)): \(errorBody)"])
-        }
-
+        stopPlayback()
         try Task.checkCancellation()
 
-        let player = try AVAudioPlayer(data: data)
-        self.audioPlayer = player
-        player.play()
-        print("🔊 ElevenLabs TTS: playing \(data.count / 1024)KB audio")
+        let utterance = AVSpeechUtterance(string: text)
+        utterance.rate = AVSpeechUtteranceDefaultSpeechRate
+        utterance.pitchMultiplier = 1.0
+        utterance.volume = 1.0
+
+        _isPlaying = true
+        synthesizer.speak(utterance)
+        print("🔊 Local TTS: speaking \(text.count) chars")
+        // Returns immediately — delegate callbacks update _isPlaying
     }
 
-    /// Whether TTS audio is currently playing back.
-    var isPlaying: Bool {
-        audioPlayer?.isPlaying ?? false
-    }
+    var isPlaying: Bool { _isPlaying }
 
-    /// Stops any in-progress playback immediately.
     func stopPlayback() {
-        audioPlayer?.stop()
-        audioPlayer = nil
+        if synthesizer.isSpeaking {
+            synthesizer.stopSpeaking(at: .immediate)
+        }
+        _isPlaying = false
+    }
+}
+
+extension ElevenLabsTTSClient: AVSpeechSynthesizerDelegate {
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didFinish utterance: AVSpeechUtterance) {
+        Task { @MainActor in self._isPlaying = false }
+    }
+
+    nonisolated func speechSynthesizer(_ synthesizer: AVSpeechSynthesizer, didCancel utterance: AVSpeechUtterance) {
+        Task { @MainActor in self._isPlaying = false }
     }
 }

@@ -3,3 +3,4 @@ pyaudio
 pynput
 requests
 pillow
+faster-whisper

@@ -1,39 +1,36 @@
 #!/usr/bin/env python3
 """
 Clicky - macOS menu bar AI assistant
-Requires: pip install rumps pyaudio pynput requests pillow
-Run servers first: ./start-servers.sh
+Requires: pip install rumps pyaudio pynput pillow faster-whisper mlx-lm
 """
 
-import base64
 import io
-import json
+import os
+import tempfile
 import threading
 import time
 import wave
 from concurrent.futures import ThreadPoolExecutor, Future
 
 import pyaudio
-import requests
 import rumps
+from faster_whisper import WhisperModel
+from mlx_lm import load, stream_generate
 from pynput import keyboard
 
 # ── Config ────────────────────────────────────────────────────────────────────
 
-WHISPER_URL = "http://localhost:8081/inference"
-QWEN_URL    = "http://localhost:8080/v1/chat/completions"
-QWEN_MODEL  = "mlx-community/Qwen2.5-3B-Instruct-4bit"
+QWEN_MODEL         = "mlx-community/Qwen2.5-3B-Instruct-4bit"
+WHISPER_MODEL_SIZE = "base"   # tiny/base/small — base is fast enough and accurate
 
 SYSTEM_PROMPT = (
     "You are Clicky, a concise macOS desktop assistant. "
-    "You can see the user's screen and hear their voice. "
-    "Give short, direct answers. No markdown. No bullet lists unless asked. "
-    "If asked about something on screen, reference it specifically."
+    "Give short, direct answers. No markdown. No bullet lists unless asked."
 )
 
-MAX_HISTORY_TURNS         = 10   # keep last N user+assistant pairs
+MAX_HISTORY_TURNS         = 10
 OVERLAY_AUTO_HIDE_SECONDS = 12
-OVERLAY_UPDATE_MIN_GAP    = 0.08  # throttle overlay redraws to ~12fps
+OVERLAY_UPDATE_MIN_GAP    = 0.05  # ~20fps overlay refresh
 
 # Audio
 SAMPLE_RATE = 16_000
@@ -41,10 +38,15 @@ CHANNELS    = 1
 CHUNK       = 1024
 FORMAT      = pyaudio.paInt16
 
-# ── Shared HTTP session (reuses TCP connections) ───────────────────────────────
+# ── Load models at startup (once) ─────────────────────────────────────────────
 
-_http = requests.Session()
-_http.headers.update({"Connection": "keep-alive"})
+print(f"Loading Whisper {WHISPER_MODEL_SIZE}…")
+_whisper = WhisperModel(WHISPER_MODEL_SIZE, device="auto", compute_type="int8")
+print("Whisper ready.")
+
+print(f"Loading {QWEN_MODEL}…")
+_qwen_model, _qwen_tokenizer = load(QWEN_MODEL)
+print("Qwen ready. Starting app…")
 
 # ── Audio recorder ────────────────────────────────────────────────────────────
 
@@ -61,11 +63,8 @@ class AudioRecorder:
             self._frames = []
             self._active = True
         self._stream = self._pa.open(
-            format=FORMAT,
-            channels=CHANNELS,
-            rate=SAMPLE_RATE,
-            input=True,
-            frames_per_buffer=CHUNK,
+            format=FORMAT, channels=CHANNELS, rate=SAMPLE_RATE,
+            input=True, frames_per_buffer=CHUNK,
             stream_callback=self._on_audio,
         )
         self._stream.start_stream()
@@ -100,92 +99,45 @@ class AudioRecorder:
         except Exception:
             pass
 
-# ── Screen capture ────────────────────────────────────────────────────────────
-
-def capture_screenshot_b64() -> str | None:
-    """Capture primary screen → base64 JPEG. Returns None on failure."""
-    try:
-        from PIL import ImageGrab
-        img = ImageGrab.grab()
-        buf = io.BytesIO()
-        img.convert("RGB").save(buf, format="JPEG", quality=55)
-        return base64.b64encode(buf.getvalue()).decode()
-    except Exception:
-        return None
-
 # ── Whisper STT ───────────────────────────────────────────────────────────────
 
 def transcribe_wav(wav_data: bytes) -> str:
-    resp = _http.post(
-        WHISPER_URL,
-        files={"file": ("audio.wav", wav_data, "audio/wav")},
-        data={"response_format": "json"},
-        timeout=30,
+    with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as f:
+        f.write(wav_data)
+        tmp_path = f.name
+    try:
+        segments, _ = _whisper.transcribe(tmp_path, language="en", beam_size=1)
+        return " ".join(s.text for s in segments).strip()
+    finally:
+        os.unlink(tmp_path)
+
+# ── Qwen LLM (in-process, no HTTP) ───────────────────────────────────────────
+
+def stream_qwen(history: list[dict], transcript: str, on_chunk) -> str:
+    messages = (
+        [{"role": "system", "content": SYSTEM_PROMPT}]
+        + history
+        + [{"role": "user", "content": transcript}]
     )
-    resp.raise_for_status()
-    return resp.json().get("text", "").strip()
-
-# ── Qwen LLM ──────────────────────────────────────────────────────────────────
-
-def build_user_message(transcript: str, screenshot_b64: str | None) -> dict:
-    if screenshot_b64:
-        return {
-            "role": "user",
-            "content": [
-                {
-                    "type": "image_url",
-                    "image_url": {
-                        "url": f"data:image/jpeg;base64,{screenshot_b64}",
-                        "detail": "low",
-                    },
-                },
-                {"type": "text", "text": transcript},
-            ],
-        }
-    return {"role": "user", "content": transcript}
-
-
-def stream_qwen(messages: list[dict], on_chunk) -> str:
-    """Stream Qwen response. on_chunk(accumulated_text) called per token."""
-    payload = {
-        "model": QWEN_MODEL,
-        "messages": messages,
-        "stream": True,
-        "max_tokens": 512,
-        "temperature": 0.7,
-    }
+    prompt = _qwen_tokenizer.apply_chat_template(
+        messages, tokenize=False, add_generation_prompt=True
+    )
     accumulated = ""
     last_update  = 0.0
-    with _http.post(QWEN_URL, json=payload, stream=True, timeout=60) as resp:
-        resp.raise_for_status()
-        for raw_line in resp.iter_lines():
-            if not raw_line:
-                continue
-            line = raw_line.decode("utf-8")
-            if not line.startswith("data: "):
-                continue
-            data = line[6:]
-            if data == "[DONE]":
-                break
-            try:
-                delta = json.loads(data)["choices"][0]["delta"].get("content", "")
-                if delta:
-                    accumulated += delta
-                    now = time.monotonic()
-                    if now - last_update >= OVERLAY_UPDATE_MIN_GAP:
-                        on_chunk(accumulated)
-                        last_update = now
-            except (json.JSONDecodeError, KeyError, IndexError):
-                continue
-    # Always emit final accumulated text
+    for response in stream_generate(_qwen_model, _qwen_tokenizer, prompt, max_tokens=256):
+        accumulated += response.text
+        now = time.monotonic()
+        if now - last_update >= OVERLAY_UPDATE_MIN_GAP:
+            on_chunk(accumulated)
+            last_update = now
+        if response.finish_reason is not None:
+            break
     on_chunk(accumulated)
     return accumulated
 
 # ── Tkinter overlay ───────────────────────────────────────────────────────────
 
 class OverlayWindow:
-    """Floating dark window near the cursor. All methods called on main thread via after()."""
-
     def __init__(self, tk_root):
         self._root       = tk_root
         self._win        = None
@@ -207,15 +159,9 @@ class OverlayWindow:
         self._win.attributes("-alpha", 0.93)
         self._win.configure(bg="#1e1e2e")
         self._label = tk.Label(
-            self._win,
-            text="",
-            bg="#1e1e2e",
-            fg="#cdd6f4",
-            font=("SF Pro Text", 13),
-            wraplength=420,
-            justify="left",
-            padx=16,
-            pady=12,
+            self._win, text="", bg="#1e1e2e", fg="#cdd6f4",
+            font=("SF Pro Text", 13), wraplength=420,
+            justify="left", padx=16, pady=12,
         )
         self._label.pack()
 
@@ -265,40 +211,21 @@ class OverlayWindow:
             int(OVERLAY_AUTO_HIDE_SECONDS * 1000), self.hide
         )
 
-# ── Server health check ───────────────────────────────────────────────────────
-
-def check_servers() -> tuple[bool, bool]:
-    """Returns (whisper_ok, qwen_ok). Non-blocking, 1s timeout each."""
-    def ping(url):
-        try:
-            _http.get(url.rsplit("/", 1)[0], timeout=1)
-            return True
-        except Exception:
-            return False
-
-    with ThreadPoolExecutor(max_workers=2) as pool:
-        whisper_f = pool.submit(ping, WHISPER_URL)
-        qwen_f    = pool.submit(ping, "http://localhost:8080/v1/models")
-        return whisper_f.result(), qwen_f.result()
-
 # ── Main app ──────────────────────────────────────────────────────────────────
 
 class ClickyApp(rumps.App):
     def __init__(self):
         super().__init__("🎙", quit_button="Quit")
-        self.menu = ["Status", None, "Clear History", "Check Servers"]
+        self.menu = ["Status", None, "Clear History"]
 
         self._recorder    = AudioRecorder()
-        self._history: list[dict] = []  # text-only OpenAI message history
+        self._history: list[dict] = []
         self._hotkey_held = False
         self._proc_lock   = threading.Lock()
         self._processing  = False
         self._overlay     = None
         self._tk_root     = None
-        self._executor    = ThreadPoolExecutor(max_workers=3)
-
-        # Screenshot captured at key-down (while user speaks) in background
-        self._screenshot_future: Future | None = None
+        self._executor    = ThreadPoolExecutor(max_workers=2)
 
         self._init_tk()
         self._setup_hotkey()
@@ -333,12 +260,12 @@ class ClickyApp(rumps.App):
                 self._hotkey_held = False
                 self._on_push_stop()
 
-        threading.Thread(
-            target=lambda: keyboard.Listener(
-                on_press=on_press, on_release=on_release
-            ).join(),
-            daemon=True,
-        ).start()
+        def _run_listener():
+            listener = keyboard.Listener(on_press=on_press, on_release=on_release)
+            listener.start()
+            listener.join()
+
+        threading.Thread(target=_run_listener, daemon=True).start()
 
     # ── Push-to-talk ──────────────────────────────────────────────────────────
 
@@ -347,8 +274,6 @@ class ClickyApp(rumps.App):
             if self._processing:
                 return
         self.title = "🔴"
-        # Capture screenshot NOW while user speaks — hides latency
-        self._screenshot_future = self._executor.submit(capture_screenshot_b64)
         self._recorder.start()
 
     def _on_push_stop(self):
@@ -358,18 +283,13 @@ class ClickyApp(rumps.App):
             self._processing = True
         self.title = "⏳"
         wav_data = self._recorder.stop()
-        screenshot_future = self._screenshot_future
-        self._screenshot_future = None
-        self._executor.submit(self._pipeline, wav_data, screenshot_future)
+        self._executor.submit(self._pipeline, wav_data)
 
     # ── AI pipeline ───────────────────────────────────────────────────────────
 
-    def _pipeline(self, wav_data: bytes, screenshot_future: Future | None):
+    def _pipeline(self, wav_data: bytes):
         try:
-            # Transcribe + wait for screenshot in parallel
-            transcribe_future = self._executor.submit(transcribe_wav, wav_data)
-            screenshot_b64    = screenshot_future.result() if screenshot_future else None
-            transcript        = transcribe_future.result()
+            transcript = transcribe_wav(wav_data)
 
             if not transcript:
                 self._set_status("No speech detected")
@@ -377,35 +297,24 @@ class ClickyApp(rumps.App):
 
             self._set_status(f"You: {transcript}")
             self._show_overlay(f"You: {transcript}\n\n…")
-
-            # Build messages — history stores text only (no base64 bloat)
-            user_msg = build_user_message(transcript, screenshot_b64)
-            messages = (
-                [{"role": "system", "content": SYSTEM_PROMPT}]
-                + self._history
-                + [user_msg]
-            )
-
             self._set_status("Thinking…")
+
             response_text = stream_qwen(
-                messages,
+                self._history,
+                transcript,
                 on_chunk=lambda text: self._update_overlay(
                     f"You: {transcript}\n\n{text}"
                 ),
             )
 
-            # Store text-only in history (never store image base64)
             self._history.append({"role": "user",      "content": transcript})
-            self._history.append({"role": "assistant", "content": response_text})
+            self._history.append({"role": "assistant",  "content": response_text})
             if len(self._history) > MAX_HISTORY_TURNS * 2:
                 self._history = self._history[-(MAX_HISTORY_TURNS * 2):]
 
             self._show_overlay(f"You: {transcript}\n\n{response_text}")
             self._set_status("Ready")
 
-        except requests.exceptions.ConnectionError:
-            self._set_status("Server offline")
-            self._show_overlay("Servers not running.\nRun: ./start-servers.sh")
         except Exception as exc:
             self._set_status(f"Error: {exc}")
             self._show_overlay(f"Error: {exc}")
@@ -424,16 +333,6 @@ class ClickyApp(rumps.App):
     def _clear_history(self, _):
         self._history.clear()
         self._set_status("History cleared")
-
-    @rumps.clicked("Check Servers")
-    def _check_servers(self, _):
-        self._set_status("Checking servers…")
-        def _do():
-            whisper_ok, qwen_ok = check_servers()
-            w = "✓ Whisper" if whisper_ok else "✗ Whisper"
-            q = "✓ Qwen"   if qwen_ok    else "✗ Qwen"
-            self._set_status(f"{w}  {q}")
-        self._executor.submit(_do)
 
     # ── Helpers ───────────────────────────────────────────────────────────────
 
