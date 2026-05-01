@@ -7,6 +7,38 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		79D3C1E92FA10F23004AE701 /* steve.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 79D3C1E52FA10F23004AE701 /* steve.jpg */; };
+		79D3C1EA2FA10F23004AE701 /* ff.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 79D3C1DB2FA10F23004AE701 /* ff.mp3 */; };
+		79D3C1EB2FA10F23004AE701 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 79D3C1CB2FA10F23004AE701 /* Assets.xcassets */; };
+		79D3C1EC2FA10F23004AE701 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 79D3C1DD2FA10F23004AE701 /* Info.plist */; };
+		79D3C1ED2FA10F23004AE701 /* AGENTS.md in Resources */ = {isa = PBXBuildFile; fileRef = 79D3C1C72FA10F23004AE701 /* AGENTS.md */; };
+		79D3C1EE2FA10F23004AE701 /* enter.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 79D3C1D92FA10F23004AE701 /* enter.mp3 */; };
+		79D3C1EF2FA10F23004AE701 /* codex-add-project.png in Resources */ = {isa = PBXBuildFile; fileRef = 79D3C1D12FA10F23004AE701 /* codex-add-project.png */; };
+		79D3C1F02FA10F23004AE701 /* eshop.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 79D3C1DA2FA10F23004AE701 /* eshop.mp3 */; };
+		79D3C1F12FA10F23004AE701 /* leanring_buddyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1DE2FA10F23004AE701 /* leanring_buddyApp.swift */; };
+		79D3C1F22FA10F23004AE701 /* OpenAIAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1E22FA10F23004AE701 /* OpenAIAPI.swift */; };
+		79D3C1F32FA10F23004AE701 /* AssemblyAIStreamingTranscriptionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1CA2FA10F23004AE701 /* AssemblyAIStreamingTranscriptionProvider.swift */; };
+		79D3C1F42FA10F23004AE701 /* OverlayWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1E42FA10F23004AE701 /* OverlayWindow.swift */; };
+		79D3C1F52FA10F23004AE701 /* OpenAIAudioTranscriptionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1E32FA10F23004AE701 /* OpenAIAudioTranscriptionProvider.swift */; };
+		79D3C1F62FA10F23004AE701 /* WindowPositionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1E72FA10F23004AE701 /* WindowPositionManager.swift */; };
+		79D3C1F72FA10F23004AE701 /* BuddyAudioConversionSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1CC2FA10F23004AE701 /* BuddyAudioConversionSupport.swift */; };
+		79D3C1F82FA10F23004AE701 /* AppleSpeechTranscriptionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1C92FA10F23004AE701 /* AppleSpeechTranscriptionProvider.swift */; };
+		79D3C1F92FA10F23004AE701 /* CompanionResponseOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1D42FA10F23004AE701 /* CompanionResponseOverlay.swift */; };
+		79D3C1FA2FA10F23004AE701 /* MLXQwenAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1E12FA10F23004AE701 /* MLXQwenAPI.swift */; };
+		79D3C1FB2FA10F23004AE701 /* WhisperLocalTranscriptionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1E62FA10F23004AE701 /* WhisperLocalTranscriptionProvider.swift */; };
+		79D3C1FC2FA10F23004AE701 /* ClickyAnalytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1D02FA10F23004AE701 /* ClickyAnalytics.swift */; };
+		79D3C1FD2FA10F23004AE701 /* BuddyTranscriptionProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1CE2FA10F23004AE701 /* BuddyTranscriptionProvider.swift */; };
+		79D3C1FE2FA10F23004AE701 /* ElementLocationDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1D72FA10F23004AE701 /* ElementLocationDetector.swift */; };
+		79D3C1FF2FA10F23004AE701 /* MenuBarPanelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1E02FA10F23004AE701 /* MenuBarPanelManager.swift */; };
+		79D3C2002FA10F23004AE701 /* ElevenLabsTTSClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1D82FA10F23004AE701 /* ElevenLabsTTSClient.swift */; };
+		79D3C2012FA10F23004AE701 /* AppBundleConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1C82FA10F23004AE701 /* AppBundleConfiguration.swift */; };
+		79D3C2022FA10F23004AE701 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1D62FA10F23004AE701 /* DesignSystem.swift */; };
+		79D3C2032FA10F23004AE701 /* GlobalPushToTalkShortcutMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1DC2FA10F23004AE701 /* GlobalPushToTalkShortcutMonitor.swift */; };
+		79D3C2042FA10F23004AE701 /* ClaudeAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1CF2FA10F23004AE701 /* ClaudeAPI.swift */; };
+		79D3C2052FA10F23004AE701 /* CompanionPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1D32FA10F23004AE701 /* CompanionPanelView.swift */; };
+		79D3C2062FA10F23004AE701 /* CompanionScreenCaptureUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1D52FA10F23004AE701 /* CompanionScreenCaptureUtility.swift */; };
+		79D3C2072FA10F23004AE701 /* BuddyDictationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1CD2FA10F23004AE701 /* BuddyDictationManager.swift */; };
+		79D3C2082FA10F23004AE701 /* CompanionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79D3C1D22FA10F23004AE701 /* CompanionManager.swift */; };
 		AA00BB032F6500030039DA55 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = AA00BB022F6500020039DA55 /* Sparkle */; };
 		AA00BB062F6500060039DA55 /* PostHog in Frameworks */ = {isa = PBXBuildFile; productRef = AA00BB052F6500050039DA55 /* PostHog */; };
 /* End PBXBuildFile section */
@@ -32,6 +64,39 @@
 		28F22CBF2F56440300A0FC59 /* Clicky.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Clicky.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F22CCC2F56440300A0FC59 /* leanring-buddyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "leanring-buddyTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		28F22CD62F56440300A0FC59 /* leanring-buddyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "leanring-buddyUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		79D3C1C72FA10F23004AE701 /* AGENTS.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = AGENTS.md; sourceTree = "<group>"; };
+		79D3C1C82FA10F23004AE701 /* AppBundleConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppBundleConfiguration.swift; sourceTree = "<group>"; };
+		79D3C1C92FA10F23004AE701 /* AppleSpeechTranscriptionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleSpeechTranscriptionProvider.swift; sourceTree = "<group>"; };
+		79D3C1CA2FA10F23004AE701 /* AssemblyAIStreamingTranscriptionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssemblyAIStreamingTranscriptionProvider.swift; sourceTree = "<group>"; };
+		79D3C1CB2FA10F23004AE701 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		79D3C1CC2FA10F23004AE701 /* BuddyAudioConversionSupport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyAudioConversionSupport.swift; sourceTree = "<group>"; };
+		79D3C1CD2FA10F23004AE701 /* BuddyDictationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyDictationManager.swift; sourceTree = "<group>"; };
+		79D3C1CE2FA10F23004AE701 /* BuddyTranscriptionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuddyTranscriptionProvider.swift; sourceTree = "<group>"; };
+		79D3C1CF2FA10F23004AE701 /* ClaudeAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClaudeAPI.swift; sourceTree = "<group>"; };
+		79D3C1D02FA10F23004AE701 /* ClickyAnalytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClickyAnalytics.swift; sourceTree = "<group>"; };
+		79D3C1D12FA10F23004AE701 /* codex-add-project.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "codex-add-project.png"; sourceTree = "<group>"; };
+		79D3C1D22FA10F23004AE701 /* CompanionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionManager.swift; sourceTree = "<group>"; };
+		79D3C1D32FA10F23004AE701 /* CompanionPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionPanelView.swift; sourceTree = "<group>"; };
+		79D3C1D42FA10F23004AE701 /* CompanionResponseOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionResponseOverlay.swift; sourceTree = "<group>"; };
+		79D3C1D52FA10F23004AE701 /* CompanionScreenCaptureUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionScreenCaptureUtility.swift; sourceTree = "<group>"; };
+		79D3C1D62FA10F23004AE701 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
+		79D3C1D72FA10F23004AE701 /* ElementLocationDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementLocationDetector.swift; sourceTree = "<group>"; };
+		79D3C1D82FA10F23004AE701 /* ElevenLabsTTSClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElevenLabsTTSClient.swift; sourceTree = "<group>"; };
+		79D3C1D92FA10F23004AE701 /* enter.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = enter.mp3; sourceTree = "<group>"; };
+		79D3C1DA2FA10F23004AE701 /* eshop.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = eshop.mp3; sourceTree = "<group>"; };
+		79D3C1DB2FA10F23004AE701 /* ff.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = ff.mp3; sourceTree = "<group>"; };
+		79D3C1DC2FA10F23004AE701 /* GlobalPushToTalkShortcutMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GlobalPushToTalkShortcutMonitor.swift; sourceTree = "<group>"; };
+		79D3C1DD2FA10F23004AE701 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		79D3C1DE2FA10F23004AE701 /* leanring_buddyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = leanring_buddyApp.swift; sourceTree = "<group>"; };
+		79D3C1DF2FA10F23004AE701 /* leanring-buddy.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "leanring-buddy.entitlements"; sourceTree = "<group>"; };
+		79D3C1E02FA10F23004AE701 /* MenuBarPanelManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuBarPanelManager.swift; sourceTree = "<group>"; };
+		79D3C1E12FA10F23004AE701 /* MLXQwenAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLXQwenAPI.swift; sourceTree = "<group>"; };
+		79D3C1E22FA10F23004AE701 /* OpenAIAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIAPI.swift; sourceTree = "<group>"; };
+		79D3C1E32FA10F23004AE701 /* OpenAIAudioTranscriptionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenAIAudioTranscriptionProvider.swift; sourceTree = "<group>"; };
+		79D3C1E42FA10F23004AE701 /* OverlayWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverlayWindow.swift; sourceTree = "<group>"; };
+		79D3C1E52FA10F23004AE701 /* steve.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = steve.jpg; sourceTree = "<group>"; };
+		79D3C1E62FA10F23004AE701 /* WhisperLocalTranscriptionProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhisperLocalTranscriptionProvider.swift; sourceTree = "<group>"; };
+		79D3C1E72FA10F23004AE701 /* WindowPositionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowPositionManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -82,6 +147,7 @@
 		28F22CB62F56440300A0FC59 = {
 			isa = PBXGroup;
 			children = (
+				79D3C1E82FA10F23004AE701 /* leanring-buddy */,
 				28F22CC12F56440300A0FC59 /* leanring-buddy */,
 				28F22CCF2F56440300A0FC59 /* leanring-buddyTests */,
 				28F22CD92F56440300A0FC59 /* leanring-buddyUITests */,
@@ -97,6 +163,46 @@
 				28F22CD62F56440300A0FC59 /* leanring-buddyUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		79D3C1E82FA10F23004AE701 /* leanring-buddy */ = {
+			isa = PBXGroup;
+			children = (
+				79D3C1C72FA10F23004AE701 /* AGENTS.md */,
+				79D3C1C82FA10F23004AE701 /* AppBundleConfiguration.swift */,
+				79D3C1C92FA10F23004AE701 /* AppleSpeechTranscriptionProvider.swift */,
+				79D3C1CA2FA10F23004AE701 /* AssemblyAIStreamingTranscriptionProvider.swift */,
+				79D3C1CB2FA10F23004AE701 /* Assets.xcassets */,
+				79D3C1CC2FA10F23004AE701 /* BuddyAudioConversionSupport.swift */,
+				79D3C1CD2FA10F23004AE701 /* BuddyDictationManager.swift */,
+				79D3C1CE2FA10F23004AE701 /* BuddyTranscriptionProvider.swift */,
+				79D3C1CF2FA10F23004AE701 /* ClaudeAPI.swift */,
+				79D3C1D02FA10F23004AE701 /* ClickyAnalytics.swift */,
+				79D3C1D12FA10F23004AE701 /* codex-add-project.png */,
+				79D3C1D22FA10F23004AE701 /* CompanionManager.swift */,
+				79D3C1D32FA10F23004AE701 /* CompanionPanelView.swift */,
+				79D3C1D42FA10F23004AE701 /* CompanionResponseOverlay.swift */,
+				79D3C1D52FA10F23004AE701 /* CompanionScreenCaptureUtility.swift */,
+				79D3C1D62FA10F23004AE701 /* DesignSystem.swift */,
+				79D3C1D72FA10F23004AE701 /* ElementLocationDetector.swift */,
+				79D3C1D82FA10F23004AE701 /* ElevenLabsTTSClient.swift */,
+				79D3C1D92FA10F23004AE701 /* enter.mp3 */,
+				79D3C1DA2FA10F23004AE701 /* eshop.mp3 */,
+				79D3C1DB2FA10F23004AE701 /* ff.mp3 */,
+				79D3C1DC2FA10F23004AE701 /* GlobalPushToTalkShortcutMonitor.swift */,
+				79D3C1DD2FA10F23004AE701 /* Info.plist */,
+				79D3C1DE2FA10F23004AE701 /* leanring_buddyApp.swift */,
+				79D3C1DF2FA10F23004AE701 /* leanring-buddy.entitlements */,
+				79D3C1E02FA10F23004AE701 /* MenuBarPanelManager.swift */,
+				79D3C1E12FA10F23004AE701 /* MLXQwenAPI.swift */,
+				79D3C1E22FA10F23004AE701 /* OpenAIAPI.swift */,
+				79D3C1E32FA10F23004AE701 /* OpenAIAudioTranscriptionProvider.swift */,
+				79D3C1E42FA10F23004AE701 /* OverlayWindow.swift */,
+				79D3C1E52FA10F23004AE701 /* steve.jpg */,
+				79D3C1E62FA10F23004AE701 /* WhisperLocalTranscriptionProvider.swift */,
+				79D3C1E72FA10F23004AE701 /* WindowPositionManager.swift */,
+			);
+			path = "leanring-buddy";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -225,6 +331,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79D3C1E92FA10F23004AE701 /* steve.jpg in Resources */,
+				79D3C1EA2FA10F23004AE701 /* ff.mp3 in Resources */,
+				79D3C1EB2FA10F23004AE701 /* Assets.xcassets in Resources */,
+				79D3C1EC2FA10F23004AE701 /* Info.plist in Resources */,
+				79D3C1ED2FA10F23004AE701 /* AGENTS.md in Resources */,
+				79D3C1EE2FA10F23004AE701 /* enter.mp3 in Resources */,
+				79D3C1EF2FA10F23004AE701 /* codex-add-project.png in Resources */,
+				79D3C1F02FA10F23004AE701 /* eshop.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -249,6 +363,30 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79D3C1F12FA10F23004AE701 /* leanring_buddyApp.swift in Sources */,
+				79D3C1F22FA10F23004AE701 /* OpenAIAPI.swift in Sources */,
+				79D3C1F32FA10F23004AE701 /* AssemblyAIStreamingTranscriptionProvider.swift in Sources */,
+				79D3C1F42FA10F23004AE701 /* OverlayWindow.swift in Sources */,
+				79D3C1F52FA10F23004AE701 /* OpenAIAudioTranscriptionProvider.swift in Sources */,
+				79D3C1F62FA10F23004AE701 /* WindowPositionManager.swift in Sources */,
+				79D3C1F72FA10F23004AE701 /* BuddyAudioConversionSupport.swift in Sources */,
+				79D3C1F82FA10F23004AE701 /* AppleSpeechTranscriptionProvider.swift in Sources */,
+				79D3C1F92FA10F23004AE701 /* CompanionResponseOverlay.swift in Sources */,
+				79D3C1FA2FA10F23004AE701 /* MLXQwenAPI.swift in Sources */,
+				79D3C1FB2FA10F23004AE701 /* WhisperLocalTranscriptionProvider.swift in Sources */,
+				79D3C1FC2FA10F23004AE701 /* ClickyAnalytics.swift in Sources */,
+				79D3C1FD2FA10F23004AE701 /* BuddyTranscriptionProvider.swift in Sources */,
+				79D3C1FE2FA10F23004AE701 /* ElementLocationDetector.swift in Sources */,
+				79D3C1FF2FA10F23004AE701 /* MenuBarPanelManager.swift in Sources */,
+				79D3C2002FA10F23004AE701 /* ElevenLabsTTSClient.swift in Sources */,
+				79D3C2012FA10F23004AE701 /* AppBundleConfiguration.swift in Sources */,
+				79D3C2022FA10F23004AE701 /* DesignSystem.swift in Sources */,
+				79D3C2032FA10F23004AE701 /* GlobalPushToTalkShortcutMonitor.swift in Sources */,
+				79D3C2042FA10F23004AE701 /* ClaudeAPI.swift in Sources */,
+				79D3C2052FA10F23004AE701 /* CompanionPanelView.swift in Sources */,
+				79D3C2062FA10F23004AE701 /* CompanionScreenCaptureUtility.swift in Sources */,
+				79D3C2072FA10F23004AE701 /* BuddyDictationManager.swift in Sources */,
+				79D3C2082FA10F23004AE701 /* CompanionManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -411,7 +549,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2UDAY4J48G;
+				DEVELOPMENT_TEAM = 7G3PJPU7RT;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
@@ -449,7 +587,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 2UDAY4J48G;
+				DEVELOPMENT_TEAM = 7G3PJPU7RT;
 				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;

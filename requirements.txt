@@ -1,0 +1,5 @@
+rumps
+pyaudio
+pynput
+requests
+pillow

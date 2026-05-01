@@ -58,14 +58,6 @@ struct CompanionPanelView: View {
             //         .padding(.horizontal, 16)
             // }
 
-            if companionManager.hasCompletedOnboarding && companionManager.allPermissionsGranted {
-                Spacer()
-                    .frame(height: 16)
-
-                dmFarzaButton
-                    .padding(.horizontal, 16)
-            }
-
             Spacer()
                 .frame(height: 12)
 
@@ -607,8 +599,8 @@ struct CompanionPanelView: View {
             Spacer()
 
             HStack(spacing: 0) {
-                modelOptionButton(label: "Sonnet", modelID: "claude-sonnet-4-6")
-                modelOptionButton(label: "Opus", modelID: "claude-opus-4-6")
+                modelOptionButton(label: "Qwen 3B", modelID: "mlx-community/Qwen2.5-3B-Instruct-4bit")
+                modelOptionButton(label: "Qwen 7B", modelID: "mlx-community/Qwen2.5-7B-Instruct-4bit")
             }
             .background(
                 RoundedRectangle(cornerRadius: 6, style: .continuous)
@@ -641,43 +633,6 @@ struct CompanionPanelView: View {
         .pointerCursor()
     }
 
-    // MARK: - DM Farza Button
-
-    private var dmFarzaButton: some View {
-        Button(action: {
-            if let url = URL(string: "https://x.com/farzatv") {
-                NSWorkspace.shared.open(url)
-            }
-        }) {
-            HStack(spacing: 8) {
-                Image(systemName: "bubble.left.fill")
-                    .font(.system(size: 12, weight: .medium))
-
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Got feedback? DM me")
-                        .font(.system(size: 12, weight: .semibold))
-                    Text("Bugs, ideas, anything — I read every message.")
-                        .font(.system(size: 10))
-                        .foregroundColor(DS.Colors.textTertiary)
-                }
-            }
-            .foregroundColor(DS.Colors.textSecondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 10)
-            .background(
-                RoundedRectangle(cornerRadius: DS.CornerRadius.medium, style: .continuous)
-                    .fill(Color.white.opacity(0.06))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: DS.CornerRadius.medium, style: .continuous)
-                    .stroke(DS.Colors.borderSubtle, lineWidth: 0.5)
-            )
-        }
-        .buttonStyle(.plain)
-        .pointerCursor()
-    }
-
     // MARK: - Footer
 
     private var footerSection: some View {
@@ -696,23 +651,6 @@ struct CompanionPanelView: View {
             .buttonStyle(.plain)
             .pointerCursor()
 
-            if companionManager.hasCompletedOnboarding {
-                Spacer()
-
-                Button(action: {
-                    companionManager.replayOnboarding()
-                }) {
-                    HStack(spacing: 6) {
-                        Image(systemName: "play.circle")
-                            .font(.system(size: 11, weight: .medium))
-                        Text("Watch Onboarding Again")
-                            .font(.system(size: 12, weight: .medium))
-                    }
-                    .foregroundColor(DS.Colors.textTertiary)
-                }
-                .buttonStyle(.plain)
-                .pointerCursor()
-            }
         }
     }
 

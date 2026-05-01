@@ -70,14 +70,16 @@ final class CompanionManager: ObservableObject {
 
     /// Base URL for the Cloudflare Worker proxy. All API requests route
     /// through this so keys never ship in the app binary.
-    private static let workerBaseURL = "https://your-worker-name.your-subdomain.workers.dev"
-
-    private lazy var claudeAPI: ClaudeAPI = {
-        return ClaudeAPI(proxyURL: "\(Self.workerBaseURL)/chat", model: selectedModel)
+    /// Local MLX Qwen server — run with:
+    ///   mlx_lm.server --model mlx-community/Qwen2.5-3B-Instruct-4bit --port 8080
+    private lazy var mlxQwenAPI: MLXQwenAPI = {
+        return MLXQwenAPI(model: selectedModel)
     }()
 
     private lazy var elevenLabsTTSClient: ElevenLabsTTSClient = {
-        return ElevenLabsTTSClient(proxyURL: "\(Self.workerBaseURL)/tts")
+        // ElevenLabs still needs a Worker proxy URL. Replace with your own Worker URL,
+        // or swap this out for a local TTS solution later.
+        return ElevenLabsTTSClient(proxyURL: "https://your-worker-name.your-subdomain.workers.dev/tts")
     }()
 
     /// Conversation history so Claude remembers prior exchanges within a session.
@@ -107,13 +109,13 @@ final class CompanionManager: ObservableObject {
     /// Used by the panel to show accurate status text ("Active" vs "Ready").
     @Published private(set) var isOverlayVisible: Bool = false
 
-    /// The Claude model used for voice responses. Persisted to UserDefaults.
-    @Published var selectedModel: String = UserDefaults.standard.string(forKey: "selectedClaudeModel") ?? "claude-sonnet-4-6"
+    /// The Qwen model used for voice responses. Persisted to UserDefaults.
+    @Published var selectedModel: String = UserDefaults.standard.string(forKey: "selectedQwenModel") ?? "mlx-community/Qwen2.5-3B-Instruct-4bit"
 
     func setSelectedModel(_ model: String) {
         selectedModel = model
-        UserDefaults.standard.set(model, forKey: "selectedClaudeModel")
-        claudeAPI.model = model
+        UserDefaults.standard.set(model, forKey: "selectedQwenModel")
+        mlxQwenAPI.model = model
     }
 
     /// User preference for whether the Clicky cursor should be shown.
@@ -181,7 +183,7 @@ final class CompanionManager: ObservableObject {
         bindShortcutTransitions()
         // Eagerly touch the Claude API so its TLS warmup handshake completes
         // well before the onboarding demo fires at ~40s into the video.
-        _ = claudeAPI
+        _ = mlxQwenAPI
 
         // If the user already completed onboarding AND all permissions are
         // still granted, show the cursor overlay immediately. If permissions
@@ -199,20 +201,11 @@ final class CompanionManager: ObservableObject {
     /// Triggers the onboarding sequence — dismisses the panel and restarts
     /// the overlay so the welcome animation and intro video play.
     func triggerOnboarding() {
-        // Post notification so the panel manager can dismiss the panel
         NotificationCenter.default.post(name: .clickyDismissPanel, object: nil)
-
-        // Mark onboarding as completed so the Start button won't appear
-        // again on future launches — the cursor will auto-show instead
         hasCompletedOnboarding = true
-
         ClickyAnalytics.trackOnboardingStarted()
-
-        // Play Besaid theme at 60% volume, fade out after 1m 30s
-        startOnboardingMusic()
-
-        // Show the overlay for the first time — isFirstAppearance triggers
-        // the welcome animation and onboarding video
+        // Skip video and music — show overlay directly
+        overlayWindowManager.hasShownOverlayBefore = true
         overlayWindowManager.showOverlay(onScreens: NSScreen.screens, companionManager: self)
         isOverlayVisible = true
     }
@@ -223,9 +216,7 @@ final class CompanionManager: ObservableObject {
     func replayOnboarding() {
         NotificationCenter.default.post(name: .clickyDismissPanel, object: nil)
         ClickyAnalytics.trackOnboardingReplayed()
-        startOnboardingMusic()
-        // Tear down any existing overlays and recreate with isFirstAppearance = true
-        overlayWindowManager.hasShownOverlayBefore = false
+        overlayWindowManager.hasShownOverlayBefore = true
         overlayWindowManager.showOverlay(onScreens: NSScreen.screens, companionManager: self)
         isOverlayVisible = true
     }
@@ -610,7 +601,7 @@ final class CompanionManager: ObservableObject {
                     (userPlaceholder: entry.userTranscript, assistantResponse: entry.assistantResponse)
                 }
 
-                let (fullResponseText, _) = try await claudeAPI.analyzeImageStreaming(
+                let (fullResponseText, _) = try await mlxQwenAPI.analyzeImageStreaming(
                     images: labeledImages,
                     systemPrompt: Self.companionVoiceResponseSystemPrompt,
                     conversationHistory: historyForAPI,
@@ -982,7 +973,7 @@ final class CompanionManager: ObservableObject {
                 let dimensionInfo = " (image dimensions: \(cursorScreenCapture.screenshotWidthInPixels)x\(cursorScreenCapture.screenshotHeightInPixels) pixels)"
                 let labeledImages = [(data: cursorScreenCapture.imageData, label: cursorScreenCapture.label + dimensionInfo)]
 
-                let (fullResponseText, _) = try await claudeAPI.analyzeImageStreaming(
+                let (fullResponseText, _) = try await mlxQwenAPI.analyzeImageStreaming(
                     images: labeledImages,
                     systemPrompt: Self.onboardingDemoSystemPrompt,
                     userPrompt: "look around my screen and find something interesting to point at",
